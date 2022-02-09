@@ -15,6 +15,8 @@
 #include <list>
 #include <mutex>  // NOLINT
 #include <vector>
+#include <deque>
+#include <algorithm>
 
 #include "buffer/replacer.h"
 #include "common/config.h"
@@ -46,7 +48,16 @@ class LRUReplacer : public Replacer {
   auto Size() -> size_t override;
 
  private:
-  // TODO(student): implement me!
+
+  /**
+   * candidates for victimization.
+   */
+  std::deque<frame_id_t> candidates_;
+
+  /**
+   * pin_count of each in-memory frames. -1 means the frame is not in memory.
+   */
+  std::vector<int> pin_count_;
 };
 
 }  // namespace bustub
