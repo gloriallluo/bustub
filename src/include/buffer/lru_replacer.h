@@ -12,11 +12,11 @@
 
 #pragma once
 
+#include <algorithm>
+#include <deque>
 #include <list>
 #include <mutex>  // NOLINT
 #include <vector>
-#include <deque>
-#include <algorithm>
 
 #include "buffer/replacer.h"
 #include "common/config.h"
@@ -48,9 +48,8 @@ class LRUReplacer : public Replacer {
   auto Size() -> size_t override;
 
  private:
-
   /**
-   * candidates for victimization.
+   * Candidates for victimization.
    */
   std::deque<frame_id_t> candidates_;
 

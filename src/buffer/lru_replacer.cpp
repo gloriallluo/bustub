@@ -40,7 +40,7 @@ void LRUReplacer::Pin(frame_id_t frame_id) {
         candidates_.erase(iter);
       }
     }
-    pin_count_[frame_id] ++;
+    pin_count_[frame_id]++;
   }
 }
 
@@ -52,8 +52,6 @@ void LRUReplacer::Unpin(frame_id_t frame_id) {
   }
 }
 
-size_t LRUReplacer::Size() {
-  return candidates_.size();
-}
+size_t LRUReplacer::Size() { return candidates_.size(); }
 
 }  // namespace bustub

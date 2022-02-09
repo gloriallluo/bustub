@@ -21,18 +21,13 @@
 
 namespace bustub {
 
-enum ClockState {
-  Out,
-  Ready,
-  Referenced,
-  Pinned,
-};
-
 /**
  * ClockReplacer implements the clock replacement policy, which approximates the Least Recently Used policy.
  */
 class ClockReplacer : public Replacer {
  public:
+  enum class ClockState { OUT, READY, REFERENCED, PINNED };
+
   /**
    * Create a new ClockReplacer.
    * @param num_pages the maximum number of pages the ClockReplacer will be required to store
@@ -53,13 +48,12 @@ class ClockReplacer : public Replacer {
   auto Size() -> size_t override;
 
  private:
-
   frame_id_t clock_hand_;
   size_t unpinned_counter_;
   size_t num_pages_;
 
   /**
-   * the reference bit for each frame.
+   * Clock state for each frame.
    */
   std::vector<ClockState> state_;
 
