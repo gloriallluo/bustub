@@ -167,8 +167,9 @@ bool BufferPoolManagerInstance::UnpinPgImp(page_id_t page_id, bool is_dirty) {
     return false;
   }
   page->RUnlatch();
+
+  // Update metadata.
   page->WLatch();
-  page->pin_count_ = 0;
   page->is_dirty_ = is_dirty;
   page->WUnlatch();
   replacer_->Unpin(frame_id);

@@ -36,6 +36,7 @@ class BufferPoolManagerInstance : public BufferPoolManager {
    * @param log_manager the log manager (for testing only: nullptr = disable logging)
    */
   BufferPoolManagerInstance(size_t pool_size, DiskManager *disk_manager, LogManager *log_manager = nullptr);
+
   /**
    * Creates a new BufferPoolManagerInstance.
    * @param pool_size the size of the buffer pool
