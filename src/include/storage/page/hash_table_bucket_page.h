@@ -48,7 +48,7 @@ class HashTableBucketPage {
   auto GetValue(KeyType key, KeyComparator cmp, std::vector<ValueType> *result) -> bool;
 
   /**
-   * Attempts to insert a key and value in the bucket.  Uses the occupied_
+   * Attempts to insert a key and value in the bucket. Uses the occupied_
    * and readable_ arrays to keep track of each slot's availability.
    *
    * @param key key to insert
@@ -118,6 +118,14 @@ class HashTableBucketPage {
   void SetReadable(uint32_t bucket_idx);
 
   /**
+   * SetReadable - Updates the bitmap to indicate that the entry at
+   * bucket_idx is not readable.
+   *
+   * @param bucket_idx the index to update
+   */
+  void SetUnreadable(uint32_t bucket_idx);
+
+  /**
    * @return the number of readable elements, i.e. current size
    */
   auto NumReadable() -> uint32_t;
@@ -138,6 +146,13 @@ class HashTableBucketPage {
   void PrintBucket();
 
  private:
+  /** # occupied */
+  uint32_t size_ = 0;
+  /** # occupied and readable */
+  uint32_t taken_ = 0;
+  /** # occupied but unreadable */
+  uint32_t free_ = 0;
+
   //  For more on BUCKET_ARRAY_SIZE see storage/page/hash_table_page_defs.h
   char occupied_[(BUCKET_ARRAY_SIZE - 1) / 8 + 1];
   // 0 if tombstone/brand new (never occupied), 1 otherwise.

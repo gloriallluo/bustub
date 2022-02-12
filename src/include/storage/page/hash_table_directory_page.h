@@ -90,7 +90,7 @@ class HashTableDirectoryPage {
    * DirectoryIndex = Hash(key) & GLOBAL_DEPTH_MASK
    *
    * where GLOBAL_DEPTH_MASK is a mask with exactly GLOBAL_DEPTH 1's from LSB
-   * upwards.  For example, global depth 3 corresponds to 0x00000007 in a 32-bit
+   * upwards. For example, global depth 3 corresponds to 0x00000007 in a 32-bit
    * representation.
    *
    * @return mask of global_depth 1's and the rest 0's (with 1's from LSB upwards)
@@ -187,6 +187,7 @@ class HashTableDirectoryPage {
   void PrintDirectory();
 
  private:
+  uint32_t size_;
   page_id_t page_id_;
   lsn_t lsn_;
   uint32_t global_depth_{0};
