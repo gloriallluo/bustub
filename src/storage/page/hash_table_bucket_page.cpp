@@ -18,7 +18,7 @@
 #include "storage/table/tmp_tuple.h"
 
 #define BYTE_IDX(i) ((i) >> 3)
-#define BIT_MASK(i) (1 << ((i) & 7))
+#define BIT_MASK(i) (1 << ((i)&7))
 #define BIT_UNMASK(i) (BIT_MASK(i) ^ 0xff)
 
 namespace bustub {

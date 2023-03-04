@@ -147,7 +147,7 @@ class DiskExtendibleHashTable {
   auto SplitInsert(Transaction *transaction, const KeyType &key, const ValueType &value) -> bool;
 
   /**
-   * Optionally merges an empty bucket into it's pair.  This is called by Remove,
+   * Optionally merges an empty bucket into it's pair. This is called by Remove,
    * if Remove makes a bucket empty.
    *
    * There are three conditions under which we skip the merge:
@@ -166,7 +166,7 @@ class DiskExtendibleHashTable {
   BufferPoolManager *buffer_pool_manager_;
   KeyComparator comparator_;
 
-  // Readers includes inserts and removes, writers are splits and merges
+  // Readers include inserts and removes, writers are splits and merges
   ReaderWriterLatch table_latch_;
   HashFunction<KeyType> hash_fn_;
 };
