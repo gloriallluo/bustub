@@ -83,7 +83,7 @@ TEST(LRUKReplacerTest, SampleTest) {
   lru_replacer.RecordAccess(1);
   lru_replacer.SetEvictable(1, true);
   ASSERT_EQ(2, lru_replacer.Size());
-  ASSERT_EQ(true, lru_replacer.Evict(&value)); // BUG: 1
+  ASSERT_EQ(true, lru_replacer.Evict(&value));
   ASSERT_EQ(value, 4);
 
   ASSERT_EQ(1, lru_replacer.Size());

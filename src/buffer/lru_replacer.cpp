@@ -16,14 +16,14 @@ namespace bustub {
 
 LRUReplacer::LRUReplacer(size_t num_pages) {
   pin_count_.reserve(num_pages + 1);
-  pin_count_.assign(num_pages + 1, -1); // no in-memory page
+  pin_count_.assign(num_pages + 1, -1);  // no in-memory page
 }
 
 LRUReplacer::~LRUReplacer() = default;
 
 auto LRUReplacer::Victim(frame_id_t *frame_id) -> bool {
   if (candidates_.empty()) {
-    return false; // no evictable page
+    return false;  // no evictable page
   }
   latch_.lock();
   *frame_id = candidates_.front();

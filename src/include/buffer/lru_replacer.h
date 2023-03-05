@@ -47,9 +47,8 @@ class LRUReplacer : public Replacer {
   auto Size() -> size_t override;
 
  private:
-
   std::mutex latch_;
-  
+
   /**
    * Candidates for victimization (from old to new).
    */

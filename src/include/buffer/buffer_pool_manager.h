@@ -53,8 +53,6 @@ class BufferPoolManager {
   auto GetPages() -> Page * { return pages_; }
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Create a new page in the buffer pool. Set page_id to the new page's id, or nullptr if all frames
    * are currently in use and not evictable (in another word, pinned).
    *
@@ -86,8 +84,6 @@ class BufferPoolManager {
   auto NewPageGuarded(page_id_t *page_id) -> BasicPageGuard;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Fetch the requested page from the buffer pool. Return nullptr if page_id needs to be fetched from the disk
    * but all frames are currently in use and not evictable (in another word, pinned).
    *
@@ -122,8 +118,6 @@ class BufferPoolManager {
   auto FetchPageWrite(page_id_t page_id) -> WritePageGuard;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Unpin the target page from the buffer pool. If page_id is not in the buffer pool or its pin count is already
    * 0, return false.
    *
@@ -138,8 +132,6 @@ class BufferPoolManager {
   auto UnpinPage(page_id_t page_id, bool is_dirty, AccessType access_type = AccessType::Unknown) -> bool;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Flush the target page to disk.
    *
    * Use the DiskManager::WritePage() method to flush a page to disk, REGARDLESS of the dirty flag.
@@ -151,15 +143,11 @@ class BufferPoolManager {
   auto FlushPage(page_id_t page_id) -> bool;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Flush all the pages in the buffer pool to disk.
    */
   void FlushAllPages();
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Delete a page from the buffer pool. If page_id is not in the buffer pool, do nothing and return true. If the
    * page is pinned and cannot be deleted, return false immediately.
    *
@@ -181,32 +169,52 @@ class BufferPoolManager {
   /** Array of buffer pool pages. */
   Page *pages_;
   /** Pointer to the disk manager. */
-  DiskManager *disk_manager_ __attribute__((__unused__));
+  DiskManager *disk_manager_;
   /** Pointer to the log manager. Please ignore this for P1. */
   LogManager *log_manager_ __attribute__((__unused__));
-  /** Page table for keeping track of buffer pool pages. */
+
+  /**
+   * @brief Page table for keeping track of buffer pool pages.
+   *
+   * frame_id indicates an in-memory segment, while page_id indicates a disk page.
+   */
   std::unordered_map<page_id_t, frame_id_t> page_table_;
+
   /** Replacer to find unpinned pages for replacement. */
   std::unique_ptr<LRUKReplacer> replacer_;
   /** List of free frames that don't have any pages on them. */
   std::list<frame_id_t> free_list_;
-  /** This latch protects shared data structures. We recommend updating this comment to describe what it protects. */
+  /** This latch protects shared data structures. */
   std::mutex latch_;
 
   /**
    * @brief Allocate a page on disk. Caller should acquire the latch before calling this function.
    * @return the id of the allocated page
    */
-  auto AllocatePage() -> page_id_t;
+  auto AllocatePage() -> page_id_t { return next_page_id_++; }
 
   /**
    * @brief Deallocate a page on disk. Caller should acquire the latch before calling this function.
    * @param page_id id of the page to deallocate
    */
-  void DeallocatePage(__attribute__((unused)) page_id_t page_id) {
-    // This is a no-nop right now without a more complex data structure to track deallocated pages
+  void DeallocatePage(page_id_t page_id) {
+    auto iter = page_table_.find(page_id);
+    // the page is not in-memory
+    if (iter == page_table_.end()) {
+      return;
+    }
+    Page *page = &pages_[iter->second % pool_size_];
+    // invalidate the page
+    page->WLatch();
+    page->page_id_ = INVALID_PAGE_ID;
+    page->WUnlatch();
+    page_table_.erase(iter);
   }
 
-  // TODO(student): You may add additional private members and helper functions
+  /**
+   * @brief Allocate new frame either in the free_list or in replacer
+   * @return true if new frame allocated
+   */
+  bool AllocateNewFrame(frame_id_t *frame_id);
 };
 }  // namespace bustub

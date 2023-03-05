@@ -29,7 +29,7 @@ class LRUKNode {
  private:
   size_t access_cnt{0};
   bool is_evictable_{true};
- friend class LRUKReplacer;
+  friend class LRUKReplacer;
 };
 
 /**
@@ -131,7 +131,6 @@ class LRUKReplacer {
   auto Size() -> size_t;
 
  private:
-  
   size_t k_;
   size_t replacer_size_{0};
   std::mutex latch_;
@@ -140,7 +139,7 @@ class LRUKReplacer {
    * Record access number and evictable.
    */
   std::unordered_map<frame_id_t, LRUKNode> node_store_;
-  
+
   /**
    * Candidates for victimization (from old to new).
    */
