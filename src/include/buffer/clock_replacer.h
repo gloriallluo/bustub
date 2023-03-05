@@ -26,6 +26,9 @@ namespace bustub {
  */
 class ClockReplacer : public Replacer {
  public:
+
+  enum class ClockState { OUT, READY, REFERENCED, PINNED };
+  
   /**
    * Create a new ClockReplacer.
    * @param num_pages the maximum number of pages the ClockReplacer will be required to store
@@ -46,7 +49,17 @@ class ClockReplacer : public Replacer {
   auto Size() -> size_t override;
 
  private:
-  // TODO(student): implement me!
+
+  frame_id_t clock_hand_;
+  size_t unpinned_counter_;
+  size_t num_pages_;
+
+  /**
+   * Clock state for each frame.
+   */
+  std::vector<ClockState> state_;
+
+  void UpdateClockHand();
 };
 
 }  // namespace bustub

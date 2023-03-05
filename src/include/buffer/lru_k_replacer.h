@@ -27,13 +27,9 @@ enum class AccessType { Unknown = 0, Get, Scan };
 
 class LRUKNode {
  private:
-  /** History of last seen K timestamps of this page. Least recent timestamp stored in front. */
-  // Remove maybe_unused if you start using them. Feel free to change the member variables as you want.
-
-  [[maybe_unused]] std::list<size_t> history_;
-  [[maybe_unused]] size_t k_;
-  [[maybe_unused]] frame_id_t fid_;
-  [[maybe_unused]] bool is_evictable_{false};
+  size_t access_cnt{0};
+  bool is_evictable_{true};
+ friend class LRUKReplacer;
 };
 
 /**
@@ -50,9 +46,6 @@ class LRUKNode {
 class LRUKReplacer {
  public:
   /**
-   *
-   * TODO(P1): Add implementation
-   *
    * @brief a new LRUKReplacer.
    * @param num_frames the maximum number of frames the LRUReplacer will be required to store
    */
@@ -61,15 +54,11 @@ class LRUKReplacer {
   DISALLOW_COPY_AND_MOVE(LRUKReplacer);
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Destroys the LRUReplacer.
    */
   ~LRUKReplacer() = default;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Find the frame with largest backward k-distance and evict that frame. Only frames
    * that are marked as 'evictable' are candidates for eviction.
    *
@@ -86,8 +75,6 @@ class LRUKReplacer {
   auto Evict(frame_id_t *frame_id) -> bool;
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Record the event that the given frame id is accessed at current timestamp.
    * Create a new entry for access history if frame id has not been seen before.
    *
@@ -101,8 +88,6 @@ class LRUKReplacer {
   void RecordAccess(frame_id_t frame_id, AccessType access_type = AccessType::Unknown);
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Toggle whether a frame is evictable or non-evictable. This function also
    * controls replacer's size. Note that size is equal to number of evictable entries.
    *
@@ -120,8 +105,6 @@ class LRUKReplacer {
   void SetEvictable(frame_id_t frame_id, bool set_evictable);
 
   /**
-   * TODO(P1): Add implementation
-   *
    * @brief Remove an evictable frame from replacer, along with its access history.
    * This function should also decrement replacer's size if removal is successful.
    *
@@ -148,14 +131,25 @@ class LRUKReplacer {
   auto Size() -> size_t;
 
  private:
-  // TODO(student): implement me! You can replace these member variables as you like.
-  // Remove maybe_unused if you start using them.
-  [[maybe_unused]] std::unordered_map<frame_id_t, LRUKNode> node_store_;
-  [[maybe_unused]] size_t current_timestamp_{0};
-  [[maybe_unused]] size_t curr_size_{0};
-  [[maybe_unused]] size_t replacer_size_;
-  [[maybe_unused]] size_t k_;
-  [[maybe_unused]] std::mutex latch_;
+  
+  size_t k_;
+  size_t replacer_size_{0};
+  std::mutex latch_;
+
+  /**
+   * Record access number and evictable.
+   */
+  std::unordered_map<frame_id_t, LRUKNode> node_store_;
+  
+  /**
+   * Candidates for victimization (from old to new).
+   */
+  std::list<frame_id_t> candidates_;
+
+  /**
+   * Those with a access_cnt more than k_ (from old to new).
+   */
+  std::list<frame_id_t> candidates_k_;
 };
 
 }  // namespace bustub
