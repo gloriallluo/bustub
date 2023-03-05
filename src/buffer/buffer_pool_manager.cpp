@@ -111,6 +111,7 @@ auto BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty, AccessType a
 
   // update metadata
   page->WLatch();
+  page->pin_count_--;
   page->is_dirty_ = is_dirty;
   page->WUnlatch();
 
@@ -176,13 +177,19 @@ auto BufferPoolManager::DeletePage(page_id_t page_id) -> bool {
   return false;
 }
 
-auto BufferPoolManager::FetchPageBasic(page_id_t page_id) -> BasicPageGuard { return {this, nullptr}; }
+auto BufferPoolManager::FetchPageBasic(page_id_t page_id) -> BasicPageGuard {
+  Page *page = FetchPage(page_id, AccessType::Get);
+  return BasicPageGuard{this, page};
+}
 
 auto BufferPoolManager::FetchPageRead(page_id_t page_id) -> ReadPageGuard { return {this, nullptr}; }
 
 auto BufferPoolManager::FetchPageWrite(page_id_t page_id) -> WritePageGuard { return {this, nullptr}; }
 
-auto BufferPoolManager::NewPageGuarded(page_id_t *page_id) -> BasicPageGuard { return {this, nullptr}; }
+auto BufferPoolManager::NewPageGuarded(page_id_t *page_id) -> BasicPageGuard {
+  Page *page = NewPage(page_id);
+  return {this, page};
+}
 
 bool BufferPoolManager::AllocateNewFrame(frame_id_t *frame_id) {
   if (!free_list_.empty()) {
